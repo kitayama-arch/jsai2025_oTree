@@ -11,7 +11,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>選択肢</th>
                     <th>A役の獲得ポイント</th>
                     <th>B役の獲得ポイント</th>
                 </tr>
@@ -30,7 +30,15 @@
             </tbody>
         </table>
 
-        {{ formfields }}
+        {{ if player.role == 'A' }}
+            <div class="form-group">
+                {{ formfields }}
+            </div>
+        {{ else }}
+            <div class="alert alert-info">
+                あなたはB役です。A役の選択をお待ちください。
+            </div>
+        {{ endif }}
     </div>
 </div>
 

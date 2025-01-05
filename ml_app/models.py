@@ -45,6 +45,7 @@ class Player(BasePlayer):
         return 'A' if self.id_in_group == 1 else 'B'
 
     def set_payoffs(self):
+        # AIの予測結果による報酬を設定
         scenario = Constants.prediction_scenarios[self.group.selected_scenario_index]
         if self.group.predicted_choice == 'X':
             self.payoff_A = scenario[0][0]
@@ -53,7 +54,16 @@ class Player(BasePlayer):
             self.payoff_A = scenario[1][0]
             self.payoff_B = scenario[1][1]
 
+        # AIの予測結果による報酬をparticipant.varsに保存
         if self.role() == 'A':
+            self.participant.vars['ai_prediction_payoff'] = self.payoff_A
             self.payoff = self.payoff_A
         else:
-            self.payoff = self.payoff_B 
+            self.participant.vars['ai_prediction_payoff'] = self.payoff_B
+            self.payoff = self.payoff_B
+
+        # ディクテーターゲームの報酬を最終報酬に設定
+        if 'selected_dictator_payoff' in self.participant.vars:
+            self.participant.payoff = self.participant.vars['selected_dictator_payoff']
+            # AIの予測結果による報酬を追加
+            self.participant.payoff += self.payoff 

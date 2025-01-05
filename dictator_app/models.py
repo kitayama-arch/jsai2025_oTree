@@ -1,5 +1,6 @@
 from otree.api import (
-    models, BaseConstants, BaseSubsession, BaseGroup, BasePlayer, Currency as c
+    models, BaseConstants, BaseSubsession, BaseGroup, BasePlayer, Currency as c,
+    widgets
 )
 import csv
 import os
@@ -7,7 +8,7 @@ import os
 class Constants(BaseConstants):
     name_in_url = 'dictator'
     players_per_group = 2
-    num_rounds = 16  # 学習用16ラウンド
+    num_rounds = 3  # 一時的に3ラウンドに変更
 
     # CSVからペイオフシナリオを読み込む
     csv_path = os.path.join(os.path.dirname(__file__), 'payoff_scenarios.csv')
@@ -31,7 +32,8 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     choice = models.StringField(
         choices=['X', 'Y'],
-        label='どちらの配分を選択しますか？'
+        widget=widgets.RadioSelect,
+        label='配分を選択してください'
     )
     payoff_A = models.CurrencyField()
     payoff_B = models.CurrencyField()
