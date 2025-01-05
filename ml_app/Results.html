@@ -1,0 +1,44 @@
+{{ block title }}
+    AI予測結果
+{{ endblock }}
+
+{{ block content }}
+
+<div class="card">
+    <div class="card-body">
+        <h4>AI予測結果</h4>
+        
+        <p>AIは <strong>選択肢{{ predicted_choice }}</strong> を選択しました。</p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>A役の獲得ポイント</th>
+                    <th>B役の獲得ポイント</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>選択肢X</strong></td>
+                    <td>{{ Ax }}</td>
+                    <td>{{ Bx }}</td>
+                </tr>
+                <tr>
+                    <td><strong>選択肢Y</strong></td>
+                    <td>{{ Ay }}</td>
+                    <td>{{ By }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-success">
+            <p>あなたの役割: <strong>{{ player.role }}役</strong></p>
+            <p>獲得ポイント: <strong>{{ payoff }}</strong></p>
+        </div>
+    </div>
+</div>
+
+{{ next_button }}
+
+{{ endblock }} 

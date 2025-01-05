@@ -1,0 +1,31 @@
+{{ block title }}
+    実験へようこそ
+{{ endblock }}
+
+{{ block content }}
+
+<div class="card">
+    <div class="card-body">
+        <h4>実験の概要</h4>
+        <p>この実験は以下の3つのパートで構成されています：</p>
+        <ol>
+            <li><strong>Part 1:</strong> 実労働タスク（3回）</li>
+            <li><strong>Part 2:</strong> ディクテーターゲーム（16回）</li>
+            <li><strong>Part 3:</strong> アンケート</li>
+        </ol>
+
+        <h4>注意事項</h4>
+        <ul>
+            <li>実験時間は約25分です。</li>
+            <li>実験中は他の参加者との会話や相談は禁止されています。</li>
+            <li>実験の報酬は、実労働タスクの報酬とゲームでの獲得ポイントに基づいて計算されます。</li>
+        </ul>
+
+        <h4>同意確認</h4>
+        {{ formfields }}
+    </div>
+</div>
+
+{{ next_button }}
+
+{{ endblock }} 

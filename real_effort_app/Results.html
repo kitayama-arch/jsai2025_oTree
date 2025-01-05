@@ -1,0 +1,42 @@
+{% extends "global/Page.html" %}
+{% load otree %}
+
+{% block title %}
+タスク {{ round_number }} の結果
+{% endblock %}
+
+{% block content %}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h4>結果</h4>
+        {% if is_correct %}
+            <div class="alert alert-success">
+                <h5>正解です！</h5>
+                <p>このタスクで{{ earned_points }}ポイントを獲得しました。</p>
+            </div>
+        {% else %}
+            <div class="alert alert-danger">
+                <h5>不正解です。</h5>
+                <p>このタスクではポイントを獲得できませんでした。</p>
+            </div>
+        {% endif %}
+
+        <h5>現在の合計獲得ポイント: {{ total_points }}ポイント</h5>
+    </div>
+</div>
+
+{% if is_final_round %}
+    <div class="card">
+        <div class="card-body">
+            <h4>第1パート終了</h4>
+            <p>これで第1パートが終了しました。</p>
+            <p>あなたは合計{{ total_points }}ポイントを獲得しました。</p>
+            <p>このポイントは第2パートで使用します。</p>
+        </div>
+    </div>
+{% endif %}
+
+{% next_button %}
+
+{% endblock %} 

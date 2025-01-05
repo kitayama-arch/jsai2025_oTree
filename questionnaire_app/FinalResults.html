@@ -1,0 +1,30 @@
+{{ block title }}
+    実験終了
+{{ endblock }}
+
+{{ block content }}
+
+<div class="card">
+    <div class="card-body">
+        <h4>実験が終了しました</h4>
+        <p>ご協力ありがとうございました。</p>
+
+        <div class="alert alert-success">
+            <h5>最終獲得ポイント</h5>
+            <p>合計: <strong>{{ total_payoff }}</strong> ポイント</p>
+            <ul>
+                <li>ディクテーターゲーム（ランダム1回分）: {{ dictator_payoff }} ポイント</li>
+                <li>AI予測による配分: {{ ai_payoff }} ポイント</li>
+            </ul>
+        </div>
+
+        <p>実験者の指示に従って、次の手続きを行ってください。</p>
+        <p>このウィンドウは閉じていただいて構いません。</p>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center mt-4">
+    <button class="btn btn-primary" onclick="window.close()">実験を終了する</button>
+</div>
+
+{{ endblock }} 
