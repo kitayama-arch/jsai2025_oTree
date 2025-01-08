@@ -45,4 +45,20 @@ class Player(BasePlayer):
             [4, 'ある程度理解できた'],
             [5, '十分理解できた']
         ]
+    )
+    
+    choice_reason = models.IntegerField(
+        label='あなたが選択した配分額を選んだ理由として、以下の項目はどの程度当てはまりますか？',
+        choices=[
+            [1, '全く当てはまらない'],
+            [2, 'あまり当てはまらない'],
+            [3, 'どちらともいえない'],
+            [4, 'やや当てはまる'],
+            [5, '非常に当てはまる']
+        ]
+    )
+    
+    choice_reason_detail = models.LongStringField(
+        label='その他、選択の理由があれば自由にご記入ください（任意）',
+        blank=True
     ) 

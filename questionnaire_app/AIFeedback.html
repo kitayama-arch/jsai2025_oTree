@@ -4,12 +4,23 @@
 
 {{ block content }}
 
-<div class="card">
+<div class="card mb-3">
     <div class="card-body">
         <h4>AIに関する質問</h4>
         <p>実験で使用したAIについて、以下の質問にお答えください。</p>
 
-        {{ formfields }}
+        {{ formfield 'ai_satisfaction' }}
+        {{ formfield 'ai_understanding' }}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4>選択理由について</h4>
+        <p>あなたの選択について、以下の質問にお答えください。</p>
+
+        {{ formfield 'choice_reason' }}
+        {{ formfield 'choice_reason_detail' }}
     </div>
 </div>
 

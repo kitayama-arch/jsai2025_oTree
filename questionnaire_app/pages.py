@@ -7,7 +7,12 @@ class Demographics(Page):
 
 class AIFeedback(Page):
     form_model = 'player'
-    form_fields = ['ai_satisfaction', 'ai_understanding']
+    form_fields = [
+        'ai_satisfaction', 
+        'ai_understanding',
+        'choice_reason',
+        'choice_reason_detail'
+    ]
 
 class FinalResults(Page):
     def vars_for_template(self):
