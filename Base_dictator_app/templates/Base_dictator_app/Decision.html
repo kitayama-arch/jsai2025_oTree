@@ -1,0 +1,47 @@
+{{ block title }}
+    配分の選択（ラウンド {{ round_number }}/{{ Constants.num_rounds }})
+{{ endblock }}
+
+{{ block content }}
+
+<div class="card">
+    <div class="card-body">
+        <h4>配分の選択</h4>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>選択肢</th>
+                    <th>A役の獲得ポイント</th>
+                    <th>B役の獲得ポイント</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>選択肢X</strong></td>
+                    <td>{{ Ax }}</td>
+                    <td>{{ Bx }}</td>
+                </tr>
+                <tr>
+                    <td><strong>選択肢Y</strong></td>
+                    <td>{{ Ay }}</td>
+                    <td>{{ By }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {{ if player.role == 'A' }}
+            <div class="form-group">
+                {{ formfields }}
+            </div>
+        {{ else }}
+            <div class="alert alert-info">
+                あなたはB役です。A役の選択をお待ちください。
+            </div>
+        {{ endif }}
+    </div>
+</div>
+
+{{ next_button }}
+
+{{ endblock }} 

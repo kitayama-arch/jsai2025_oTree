@@ -1,0 +1,66 @@
+{{ block title }}
+    最終結果
+{{ endblock }}
+
+{{ block content }}
+
+<div class="card">
+    <div class="card-body">
+        <h4>実験結果</h4>
+        
+        <div class="alert alert-info">
+            <p>あなたの役割: <strong>{{ role }}役</strong></p>
+        </div>
+
+        <h5>ランダムに選ばれたラウンド</h5>
+        <p>ラウンド {{ selected_round }} が選ばれました。</p>
+
+        <h5>このラウンドでの選択肢</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>選択肢</th>
+                    <th>A役の獲得ポイント</th>
+                    <th>B役の獲得ポイント</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>選択肢X</strong></td>
+                    <td>{{ payoff_x_a }}</td>
+                    <td>{{ payoff_x_b }}</td>
+                </tr>
+                <tr>
+                    <td><strong>選択肢Y</strong></td>
+                    <td>{{ payoff_y_a }}</td>
+                    <td>{{ payoff_y_b }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="alert alert-success">
+            <h5>選ばれた選択肢: {{ selected_choice }}</h5>
+            <p>このラウンドでの獲得ポイント: <strong>{{ selected_payoff }}</strong></p>
+        </div>
+
+        <h5>最終獲得ポイント</h5>
+        <table class="table">
+            <tr>
+                <td>実労働タスクでの獲得ポイント</td>
+                <td><strong>{{ initial_endowment }}</strong></td>
+            </tr>
+            <tr>
+                <td>ディクテーターゲームでの獲得ポイント</td>
+                <td><strong>{{ selected_payoff }}</strong></td>
+            </tr>
+            <tr class="table-success">
+                <td><strong>合計獲得ポイント</strong></td>
+                <td><strong>{{ total_payoff }}</strong></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+{{ next_button }}
+
+{{ endblock }} 

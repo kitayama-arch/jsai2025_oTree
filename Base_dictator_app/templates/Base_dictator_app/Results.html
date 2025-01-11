@@ -1,0 +1,27 @@
+{{ block title }}
+    結果（ラウンド {{ round_number }}/{{ Constants.num_rounds }})
+{{ endblock }}
+
+{{ block content }}
+
+<div class="card">
+    <div class="card-body">
+        <h4>このラウンドの結果</h4>
+        
+        <div class="alert alert-info">
+            <p>あなたの役割: <strong>{{ role }}役</strong></p>
+            <p>獲得ポイント: <strong>{{ payoff }}</strong></p>
+        </div>
+
+        {% if round_number == Constants.num_rounds %}
+        <div class="alert alert-success">
+            <p>全16ラウンドが終了しました。</p>
+            <p>次のパートに進みます。</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{{ next_button }}
+
+{{ endblock }} 

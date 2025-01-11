@@ -363,3 +363,60 @@ SESSION_CONFIGS = [
   - ペイオフ計算の整合性確認
 
 本要件定義をベースに、実際の研究デザインに合わせて柔軟にカスタマイズしてください。
+
+# 3. 実験条件の構造
+
+本実験は2つの条件で構成されています：
+
+## 3.1 AI学習条件（既存の実験）
+
+- **アプリケーション構成**:
+  1. welcome_app
+  2. real_effort_app
+  3. dictator_app
+  4. ml_app
+  5. questionnaire_app
+
+- **特徴**:
+  - AIによる学習・予測を含む
+  - ディクテーターゲーム後にAI予測フェーズあり
+  - 最終報酬にAI予測結果が反映
+
+## 3.2 基本条件（AIなし）
+
+- **アプリケーション構成**:
+  1. welcome_app
+  2. real_effort_app
+  3. Base_dictator
+  4. questionnaire_app
+
+- **特徴**:
+  - 従来型のディクテーターゲーム
+  - AI学習・予測フェーズなし
+  - ディクテーターゲームの結果のみで報酬決定
+
+## 3.3 ディレクトリ構造
+
+```
+ai2025/
+├── dictator_app/  (AIトレーニングあり版)
+├── Base_dictator/  (AIトレーニングなし版)
+│   ├── models.py
+│   ├── pages.py
+│   ├── templates/
+│   │   └── Base_dictator/
+│   │       ├── Results.html
+│   │       └── Decision.html
+│   └── payoff_scenarios.csv
+├── ml_app/
+├── welcome_app/
+├── real_effort_app/
+├── questionnaire_app/
+└── settings.py
+```
+
+## 3.4 実験の選択
+
+- settings.pyで2つの実験条件を設定
+- 管理者画面から適切な実験条件を選択して実施
+- データ分析時に条件による差異を比較可能
