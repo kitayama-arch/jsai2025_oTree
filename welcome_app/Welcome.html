@@ -22,9 +22,43 @@
 
         <h4>同意確認</h4>
         {{ formfields }}
+        
+        <div id="consent-warning" class="alert alert-danger mt-3" style="display: none;">
+            実験に参加するには同意が必要です。同意されない場合は実験に参加できません。
+        </div>
     </div>
 </div>
 
 {{ next_button }}
 
-{{ endblock }} 
+{{ endblock }}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var consentField = document.querySelector('input[name="consent"]');
+        var nextButton = document.querySelector('.otree-btn-next');
+        var warningDiv = document.getElementById('consent-warning');
+        
+        function updateNextButton() {
+            var selectedValue = document.querySelector('input[name="consent"]:checked');
+            if (selectedValue && selectedValue.value === 'False') {
+                nextButton.disabled = true;
+                warningDiv.style.display = 'block';
+            } else {
+                nextButton.disabled = false;
+                warningDiv.style.display = 'none';
+            }
+        }
+        
+        // ラジオボタンの変更を監視
+        var radioButtons = document.querySelectorAll('input[name="consent"]');
+        radioButtons.forEach(function(radio) {
+            radio.addEventListener('change', updateNextButton);
+        });
+        
+        // ページ読み込み時にも実行
+        updateNextButton();
+    });
+</script>
+{% endblock %} 

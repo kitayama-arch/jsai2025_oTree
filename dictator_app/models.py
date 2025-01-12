@@ -8,7 +8,7 @@ import os
 class Constants(BaseConstants):
     name_in_url = 'dictator'
     players_per_group = 2
-    num_rounds = 3  # 一時的に3ラウンドに変更
+    num_rounds = 15  # 15ラウンドに変更
 
     # CSVからペイオフシナリオを読み込む
     csv_path = os.path.join(os.path.dirname(__file__), 'payoff_scenarios.csv')

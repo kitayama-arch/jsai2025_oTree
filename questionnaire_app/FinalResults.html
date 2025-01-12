@@ -1,8 +1,8 @@
-{{ block title }}
+{% block title %}
     実験終了
-{{ endblock }}
+{% endblock %}
 
-{{ block content }}
+{% block content %}
 
 <div class="card">
     <div class="card-body">
@@ -12,11 +12,18 @@
         <div class="alert alert-success">
             <h5>最終獲得ポイント</h5>
             <p>合計: <strong>{{ total_payoff }}</strong> ポイント</p>
+            {% if session.config.name == 'ai_experiment' %}
             <ul>
                 <li>ディクテーターゲーム（ランダム1回分）: {{ dictator_payoff }} ポイント</li>
                 <li>AI予測による配分: {{ ai_payoff }} ポイント</li>
             </ul>
+            {% else %}
+            <ul>
+                <li>ディクテーターゲーム（ランダム2回分の合計）: {{ base_dictator_payoff }} ポイント</li>
+            </ul>
+            {% endif %}
         </div>
+
 
         <p>実験者の指示に従って、次の手続きを行ってください。</p>
         <p>このウィンドウは閉じていただいて構いません。</p>
@@ -27,4 +34,4 @@
     <button class="btn btn-primary" onclick="window.close()">実験を終了する</button>
 </div>
 
-{{ endblock }} 
+{% endblock %} 

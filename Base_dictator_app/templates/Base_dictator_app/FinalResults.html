@@ -1,66 +1,55 @@
-{{ block title }}
-    最終結果
-{{ endblock }}
+{% block title %}
+最終結果
+{% endblock %}
 
-{{ block content }}
+{% block content %}
+<div class="container">
+    <h4>実験結果</h4>
+    <div class="alert alert-info">
+        <p>あなたは{{ role }}役でした。</p>
+    </div>
 
-<div class="card">
-    <div class="card-body">
-        <h4>実験結果</h4>
-        
-        <div class="alert alert-info">
-            <p>あなたの役割: <strong>{{ role }}役</strong></p>
+    <h4>報酬計算に選ばれたラウンド</h4>
+    {% for round in rounds_info %}
+    <div class="card mb-3">
+        <div class="card-header">
+            ラウンド {{ round.round_number }}
+            {% if round.is_final_prediction %}
+            <span class="badge badge-info">追加ラウンド</span>
+            {% endif %}
         </div>
-
-        <h5>ランダムに選ばれたラウンド</h5>
-        <p>ラウンド {{ selected_round }} が選ばれました。</p>
-
-        <h5>このラウンドでの選択肢</h5>
-        <table class="table">
-            <thead>
+        <div class="card-body">
+            <table class="table">
                 <tr>
                     <th>選択肢</th>
-                    <th>A役の獲得ポイント</th>
-                    <th>B役の獲得ポイント</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>選択肢X</strong></td>
-                    <td>{{ payoff_x_a }}</td>
-                    <td>{{ payoff_x_b }}</td>
+                    <th>A役の報酬</th>
+                    <th>B役の報酬</th>
                 </tr>
                 <tr>
-                    <td><strong>選択肢Y</strong></td>
-                    <td>{{ payoff_y_a }}</td>
-                    <td>{{ payoff_y_b }}</td>
+                    <td>X</td>
+                    <td>{{ round.payoff_x_a }}</td>
+                    <td>{{ round.payoff_x_b }}</td>
                 </tr>
-            </tbody>
-        </table>
-
-        <div class="alert alert-success">
-            <h5>選ばれた選択肢: {{ selected_choice }}</h5>
-            <p>このラウンドでの獲得ポイント: <strong>{{ selected_payoff }}</strong></p>
+                <tr>
+                    <td>Y</td>
+                    <td>{{ round.payoff_y_a }}</td>
+                    <td>{{ round.payoff_y_b }}</td>
+                </tr>
+            </table>
+            <p>A役の選択: <strong>{{ round.choice }}</strong></p>
+            <p>獲得報酬: <strong>{{ round.payoff }}ポイント</strong></p>
         </div>
-
-        <h5>最終獲得ポイント</h5>
-        <table class="table">
-            <tr>
-                <td>実労働タスクでの獲得ポイント</td>
-                <td><strong>{{ initial_endowment }}</strong></td>
-            </tr>
-            <tr>
-                <td>ディクテーターゲームでの獲得ポイント</td>
-                <td><strong>{{ selected_payoff }}</strong></td>
-            </tr>
-            <tr class="table-success">
-                <td><strong>合計獲得ポイント</strong></td>
-                <td><strong>{{ total_payoff }}</strong></td>
-            </tr>
-        </table>
     </div>
+    {% endfor %}
+
+    <h4>最終報酬</h4>
+    <div class="alert alert-success">
+        <p>実労働タスク報酬: {{ initial_endowment }}ポイント</p>
+        <p>ゲーム報酬: {{ total_game_payoff }}ポイント</p>
+        <hr>
+        <p>合計: {{ total_payoff }}ポイント</p>
+    </div>
+
+    {% next_button %}
 </div>
-
-{{ next_button }}
-
-{{ endblock }} 
+{% endblock %} 

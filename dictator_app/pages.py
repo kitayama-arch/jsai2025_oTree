@@ -6,6 +6,10 @@ class Introduction(Page):
     def is_displayed(self):
         return self.round_number == 1
 
+class AIExplanation(Page):
+    def is_displayed(self):
+        return self.round_number == 1
+
 class Decision(Page):
     form_model = 'player'
     form_fields = ['choice']
@@ -72,4 +76,4 @@ class Results(Page):
             if self.player.role() == 'A' and 'dictator_decisions' in self.participant.vars:
                 print(f"All saved decisions: {self.participant.vars['dictator_decisions']}")
 
-page_sequence = [Introduction, Decision, WaitForA, Results] 
+page_sequence = [Introduction, AIExplanation, Decision, WaitForA, Results] 
