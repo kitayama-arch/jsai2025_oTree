@@ -27,7 +27,6 @@ class Constants(BaseConstants):
                 training_scenarios.append(scenario)
             else:
                 prediction_scenarios.append(scenario)
-                print(f"[DEBUG] 予測用シナリオを読み込み: X=({scenario[0][0]}, {scenario[0][1]}), Y=({scenario[1][0]}, {scenario[1][1]})")
 
 class Subsession(BaseSubsession):
     def creating_session(self):
@@ -107,7 +106,7 @@ class Player(BasePlayer):
                 self.payoff_A = scenario[1][0]
                 self.payoff_B = scenario[1][1]
 
-        # 自分とペアのプレイヤーの報酬を設定
+        # 自分とペアのプレイヤーの報酬を設定（このラウンドのみ）
         if self.role() == 'A':
             self.payoff = self.payoff_A
             # B役のプレイヤーを取得して報酬を設定

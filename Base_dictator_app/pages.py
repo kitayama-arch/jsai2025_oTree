@@ -118,6 +118,9 @@ class SelectRoundWaitPage(WaitPage):
             total_game_payoff = sum(selected_payoffs)
             p.participant.vars['total_base_payoff'] = total_game_payoff
             
+            # 最終報酬を設定
+            p.participant.payoff = total_game_payoff + p.participant.vars.get('initial_endowment', 1200)
+            
             # ログに計算式を出力
             initial_endowment = p.participant.vars.get('initial_endowment', 1200)
             total_payoff = total_game_payoff + initial_endowment
