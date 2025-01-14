@@ -1,0 +1,76 @@
+{{ block title }}
+    タスク {{ round_number }} / {{ total_rounds }}
+{{ endblock }}
+
+{{ block content }}
+
+<div class="card bg-light">
+    <div class="card-body">
+        <h4>探すパターン: <span class="text-primary">{{ pattern_to_find }}</span></h4>
+        <p>下の文字列から、上記のパターンと一致する部分を見つけてクリックしてください。</p>
+        <p>正解すると {{ points_per_task }} ポイントを獲得できます。</p>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <div id="binary-container" style="font-family: monospace; font-size: 1.2em; line-height: 1.8;">
+            {{ binary_string }}
+        </div>
+        <div style="display: none;">
+            {% formfield player.sequence_start %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('binary-container');
+    const input = document.getElementById('id_sequence_start');
+    const patternLength = parseInt("{{ pattern_length }}");
+    const text = container.textContent.trim();
+    
+    // 文字列を個別の文字に分割してspanで囲む
+    container.innerHTML = text.split('').map((char, index) => {
+        return `<span class="binary-char" data-index="${index}">${char}</span>`;
+    }).join('');
+    
+    // クリックイベントの処理
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('binary-char')) {
+            // 以前の選択をリセット
+            document.querySelectorAll('.binary-char.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // 新しい選択を適用
+            const startIndex = parseInt(e.target.dataset.index);
+            for (let i = 0; i < patternLength && startIndex + i < text.length; i++) {
+                const el = document.querySelector(`[data-index="${startIndex + i}"]`);
+                if (el) el.classList.add('selected');
+            }
+            
+            // 選択開始位置を保存
+            input.value = startIndex;
+        }
+    });
+});
+</script>
+
+<style>
+.binary-char {
+    cursor: pointer;
+    padding: 0 1px;
+}
+.binary-char:hover {
+    background-color: #e9ecef;
+}
+.binary-char.selected {
+    background-color: #007bff;
+    color: white;
+}
+</style>
+
+{{ next_button }}
+
+{{ endblock }} 

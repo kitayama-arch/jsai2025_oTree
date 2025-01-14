@@ -14,7 +14,7 @@ class Introduction(Page):
 
 class Task(Page):
     form_model = 'player'
-    form_fields = ['selected_sequence']
+    form_fields = ['sequence_start']
 
     def vars_for_template(self):
         return {
@@ -23,7 +23,16 @@ class Task(Page):
             'total_rounds': Constants.num_rounds,
             'pattern_to_find': Constants.patterns[self.round_number - 1],
             'points_per_task': Constants.points_per_task,
+            'pattern_length': 5,
         }
+
+    def error_message(self, values):
+        if values['sequence_start'] is None:
+            return '開始位置を選択してください。'
+        selected_text = self.player.binary_string[values['sequence_start']:values['sequence_start'] + 5]
+        pattern = Constants.patterns[self.round_number - 1]
+        if selected_text != pattern:
+            return 'このパターンは正しくありません。別の位置を試してください。'
 
     def before_next_page(self):
         self.player.check_answer()

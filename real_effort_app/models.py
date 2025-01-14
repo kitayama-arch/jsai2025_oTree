@@ -10,7 +10,7 @@ class Constants(BaseConstants):
     initial_points = 1200  # 初期ポイント
     points_per_task = 400  # タスクごとのポイント (1200/3)
     binary_length = 500  # バイナリ文字列の長さ
-    patterns = ['0001001', '1100110', '1010101']  # 各ラウンドで探すパターン
+    patterns = ['00100', '11011', '10101']  # 各ラウンドで探すパターン（5桁に変更）
 
 class Subsession(BaseSubsession):
     def creating_session(self):
@@ -33,12 +33,14 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     binary_string = models.StringField()  # 表示される二進数文字列
     selected_sequence = models.StringField(blank=True)  # プレイヤーが選択した文字列
+    sequence_start = models.IntegerField(blank=True)  # 選択開始位置
     is_correct = models.BooleanField(initial=False)  # 正解したかどうか
     earned_points = models.IntegerField(initial=0)  # 獲得ポイント
     
     def check_answer(self):
         pattern = Constants.patterns[self.round_number - 1]
-        if self.selected_sequence == pattern:
+        selected_text = self.binary_string[self.sequence_start:self.sequence_start + 5]
+        if selected_text == pattern:
             self.is_correct = True
             self.earned_points = Constants.points_per_task
             if self.round_number == Constants.num_rounds:

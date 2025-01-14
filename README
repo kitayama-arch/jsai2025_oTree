@@ -1,86 +1,29 @@
 # 1. 実験概要
 
-- **実験名称**: Baseline版「AI学習によるディクテーターゲーム実験」
+- **実験名称**: 「AI学習によるディクテーターゲーム実験」
 - **目的**:  
-  - 3回（テスト用、本番では16回）のディクテーターゲームで得られた人間の選択データを用いて、AI（ランダムフォレスト）に予測させ、その予測結果を実際に報酬に反映させる。
+  - 15回のディクテーターゲームで得られた人間の選択データを用いて、AI（ランダムフォレスト）に予測させ、その予測結果を実際に報酬に反映させる。
   - 「将来世代への外部性」や「ロール切り替え」等は省略し、シンプルに自分たち（同じペア）の報酬にのみ影響する設計とする。
 
 - **対象**: オンライン実験もしくは実験室型実験で参加する被験者
 - **大まかなフロー**:
   1. **Part 1**: 実労働タスク（すべての参加者が同一の初期ポイントを得る）
-  2. **Part 2**: ディクテーターゲーム（3回、本番では16回）
+  2. **Part 2**: ディクテーターゲーム（15回）
      - 同じペアを固定して実施
      - 一方がディクテーター（A役）、もう一方が受け手（B役）
      - 役割固定
-  3. **AI予測・決定**
-     - ランダムフォレストに3回（本番では16回）のデータを学習させる
-     - 新しい配分問題（予測用6問からランダムに1問）に対してAIがA役の「想定行動」を予測し、予測された選択肢を実装
-     - その結果が報酬に加算される
+  3. **Part 2 追加ラウンド**: 16回目のラウンド
+     - AI学習条件：AIによる予測
+     - 基本条件：通常のディクテーターゲーム
   4. **アンケート（Part 3）**: デモグラ情報・AIへの認知や満足度等の質問
 
 - **報酬支払い**:
-  - 3回（本番では16回）のうち「ランダムに1回分」＋「AIによる予測結果」
+  - 全16ラウンドから「ランダムに2回分」を選択
   - 実労働タスクの完了報酬
   - 以上を合算して最終的に参加者へ支払う
 
 ---
-
-# 2. oTreeでの要件定義
-
-## 2.1 アプリ/ページ構成
-
-### (1) **welcome_app**
-
-- **用途**:  
-  参加者への同意確認、簡単な実験説明、あるいは実験ログイン時の待機画面など。
-- **ページ例**:  
-  - `WelcomePage`: 実験概要の表示、研究倫理説明、同意ボタン
-
-### (2) **real_effort_app**（Part 1: 実労働タスク）
-
-- **用途**:  
-  - バイナリ文字列から特定のパターンを探すタスク
-  - タスク完了時に 1200ポイントを付与する（3タスク×400ポイント）
-- **ページ例**:  
-  1. `RealEffortIntro` … タスクの手順説明
-  2. `RealEffortTaskPages` … 実際のタスク（3問）  
-     - 成功判定、制限時間などを設定する
-     - すべて完了後に「1200ポイントを獲得した」フラグまたはフィールドを更新
-
-### (3) **dictator_app**（Part 2: ディクテーターゲーム）
-
-- **用途**:  
-  - 3回（本番では16回）のミニディクテーターゲームを行う
-  - 参加者同士をペア固定（A役/B役）で組み合わせる
-  - 各回の選択肢 (XかY) および配分が変化する
-  - 選択データを記録する（AIの訓練データとなる）
-  - 3回（本番では16回）終了後に「ランダム1回分」を支払対象とする
-
-- **グループ構成**:  
-  - `group_randomly(fixed_id_in_group=True)` で2名ペアを固定する。  
-  - `Player` テーブルに「role」というフィールドを持たせ、`A`（ディクテーター）/`B`（レシーバー）を割り当てる。
-
-- **ページ例**:  
-  1. `DictatorIntro` … ゲーム説明・注意事項・コントロールクイズ
-  2. `DictatorDecision` (x16)  
-     - 各ラウンドで「Option X」「Option Y」の配分を表示
-       - 例：X: (Dictator=900pt, Receiver=140pt), Y: (Dictator=800pt, Receiver=520pt) など
-       - テーブルまたは固定リストで報酬割り当てパターンを管理
-
-以下の2つの表は、実験で使用する配分パターンを示しています：
-
-1. **Table C.1**: 学習用の16ゲーム
-   - 実験の第1ステージで使用（参加者に提示）
-   - 各ゲームは、独裁者と受け手の報酬配分を示す2つの選択肢（X, Y）で構成
-   - 3つの円（不利な不平等、混合、有利な不平等）に分類され、各円に複数のゲームが含まれる
-   - 各線の傾きは、受け手の報酬を増やすための独裁者のコストを表す
-
-2. **Table C.2**: 予測用の6ゲーム
-   - 実験の第2ステージで使用（AIの予測用）
-   - この中からランダムに1つ選ばれ、AIが予測を行う
-   - 学習用ゲームと同様の構造を持つが、参加者には事前に提示されない
-
-以下に、**Table C.1. Decision Space of the Dictator Games** を16回に短縮し、Markdown形式の表として示します。
+# 2. ディクテーターゲームのペイオフ設定
 | Game | Option X (Dictator,Receiver) | Option Y (Dictator,Receiver) | Category 1 (Slope)     | Category 2 (Position)    | Category 3 (Highest Efficiency) | Category 4 (Lowest Inequality) |
 |-----:|-----------------------------:|-----------------------------:|------------------------|---------------------------|---------------------------------|--------------------------------|
 |  1*  | (890, 140)                  | (850, 520)                  | Selfish                | Advantageous             | Y                               | Y                              |
@@ -98,7 +41,6 @@
 | 27   | (520, 870)                  | (140, 870)                  | Receiver indiff.       | Disadvantageous          | X                               | X                              |
 | 28   | (450, 1020)                 | (210, 720)                  | X Pareto-dom.          | Disadvantageous          | X                               | Y                              |
 | 30   | (330, 680)                  | (330, 1060)                 | Dictator indiff.       | Disadvantageous          | Y                               | X                              |
-
 | Game | Option X (Dictator,Receiver) | Option Y (Dictator,Receiver) | Category 1 (Slope) | Category 2 (Position) | Category 3 (Highest Efficiency) | Category 4 (Lowest Inequality) |
 |-----:|-----------------------------:|-----------------------------:|--------------------|-----------------------|---------------------------------|--------------------------------|
 |  2*  | (910, 140)                  | (830, 520)                  | Selfish            | Advantageous         | Y                               | Y                              |
@@ -107,8 +49,6 @@
 | 19   | (660, 780)                  | (540, 420)                  | X Pareto-dom.      | Mixed                | X                               | None                           |
 | 23*  | (400, 690)                  | (260, 1050)                 | Selfish            | Disadvantageous      | Y                               | X                              |
 | 29   | (390, 1050)                 | (270, 690)                  | X Pareto-dom.      | Disadvantageous      | X                               | Y                              |
-
-【凡例】
 
 ■ 各列の説明
 ・Game: オリジナルの表からのゲーム番号
@@ -128,170 +68,112 @@
 ・Category 4 (Inequality): 不平等性
   - X/Y: どちらがより平等か
   - None: 同程度
+  
+# 3. 実験条件とディレクトリ構成
 
-■ 特記事項
-* 印がついたゲーム: 利害対立型
-- 独裁者はXで高報酬、受け手はYで高報酬
-- 分析では「restricted sample」として扱う
+## 3.1 実験条件の分岐
 
----
+```
+ai2025/
+├── welcome_app/      # 共通：実験の説明・同意
+├── real_effort_app/  # 共通：実労働タスク（1200ポイント獲得）
+│
+├── [条件1] AI学習条件
+│   ├── AI_dictator_app/
+│   │   ├── models.py          # ゲームのロジック
+│   │   ├── pages.py          # ページの表示・遷移
+│   │   └── payoff_scenarios.csv  # 配分シナリオ
+│   └── ml_app/
+│       ├── models.py          # AI学習・予測のロジック
+│       └── pages.py          # 予測結果の表示
+│
+├── [条件2] 基本条件
+│   └── Base_dictator_app/
+│       ├── models.py          # ゲームのロジック
+│       ├── pages.py          # ページの表示・遷移
+│       └── payoff_scenarios.csv  # 配分シナリオ
+│
+└── questionnaire_app/  # 共通：最終アンケート
 
-     - ディクテーター（A役）のみ意思決定入力画面を表示
-     - B役は待機・もしくは配分の提示のみ
-     - 結果を保存
-  3. `Results`  
-     - 3回（本番では16回）終了後にランダムに1回分のゲームを抽選・計算し、A・B各プレイヤーの獲得ポイントを表示
-
-### (4) **ml_app**（Part 2: AI予測・決定）
-
-- **目的・背景**:  
-  - ディクテーター(A役)の3回（本番では16回）の選択履歴を用いてランダムフォレストを学習
-  - 新たな配分問題（予測用6問からランダムに1問）に対して「A役はXを選ぶかYを選ぶか」を予測
-  - 予測結果を実行し、報酬を加算する
-
-- **データフロー概要**:
-  1. **ディクテーターゲーム(1〜3回、本番では16回)**
-     - 各回の選択結果（X/Y）と配分情報を保存
-     - 保存内容: PayoffX_A, PayoffX_B, PayoffY_A, PayoffY_B, choice
-  2. **学習データセット作成**
-     - 3回（本番では16回）分を(特徴量, ラベル)形式に変換
-     - **特徴量**（全8項目）:
-       1. A_x, B_x（X選択時の配分）
-       2. A_y, B_y（Y選択時の配分）
-       3. A_x + B_x, A_y + B_y（各選択肢の合計：効率性）
-       4. A_x - A_y, B_x - B_y（各選択肢の差分：不平等度等）
-     - **ラベル**: 選択肢（X=1, Y=0）
-  3. **学習（Train）**
-     - RandomForestClassifierで訓練
-     - 設定: n_estimators=10, bootstrap=True, random_state固定
-  4. **予測（Predict）**
-     - 予測用6問からランダムに1問を選択（CSVファイルのIs_Training='False'のデータから）
-     - 同じ特徴量形式で変換し予測
-     - 多数決（各木のvote）で最終予測
-  5. **報酬実装**
-     - 予測結果（X/Y）に基づく配分を実行
-     - 参加者の報酬として反映
-
-- **データ構造**:
-  ```python
-  # ml_app/models.py
-  class Constants(BaseConstants):
-      name_in_url = 'ml_app'
-      players_per_group = 2
-      num_rounds = 1  # AI予測は1ラウンド
-
-      # CSVから予測用シナリオを読み込む
-      csv_path = os.path.join(os.path.dirname(__file__), '../dictator_app/payoff_scenarios.csv')
-      prediction_scenarios = []  # Is_Training='False'のデータを読み込む
-
-  class Group(BaseGroup):
-      predicted_choice = models.StringField()  # 'X' or 'Y'
-      selected_scenario_index = models.IntegerField()  # 選択されたシナリオのインデックス
-      
-  class Player(BasePlayer):
-      pass
-  ```
-
-- **実装上の留意点**:
-  1. **ライブラリ**:
-     - scikit-learn必須（requirements.txtに記載）
-     ```txt
-     otree
-     numpy
-     pandas
-     scikit-learn
-     ```
-  2. **ページフロー**:
-     1. `MLIntro`: AI予測の説明
-     2. `MLPrediction`: 
-        - 16回分データ取得→特徴量変換
-        - ランダムフォレスト学習・予測
-        - 結果保存
-     3. `MLResult`: 予測結果・報酬表示
-
-  3. **学習・予測処理（サンプル）**:
-  ```python
-  import numpy as np
-  from sklearn.ensemble import RandomForestClassifier
-
-  def train_and_predict(dictator_data, scenario):
-      """
-      dictator_data: list of dicts
-        e.g. [{'Ax':900, 'Bx':140, 'Ay':800, 'By':520, 'choice':'X'}, ...]
-      scenario: tuple((Ax,Bx), (Ay,By))
-      """
-      # 特徴量作成
-      X_train = []
-      y_train = []
-      for d in dictator_data:
-          features = create_features(
-              d['Ax'], d['Bx'], d['Ay'], d['By']
-          )
-          X_train.append(features)
-          y_train.append(1 if d['choice']=='X' else 0)
-      
-      # モデル学習
-      clf = RandomForestClassifier(
-          n_estimators=10,
-          random_state=42
-      )
-      clf.fit(X_train, y_train)
-      
-      # 予測
-      (Ax, Bx), (Ay, By) = scenario
-      X_test = create_features(Ax, Bx, Ay, By)
-      pred = clf.predict([X_test])[0]
-      return 'X' if pred == 1 else 'Y'
-
-  def create_features(Ax, Bx, Ay, By):
-      """特徴量8項目を作成"""
-      return [
-          Ax, Bx,           # X選択時
-          Ay, By,           # Y選択時
-          Ax + Bx, Ay + By, # 効率性
-          Ax - Ay, Bx - By  # 不平等度等
-      ]
-  ```
-
-### (5) **questionnaire_app**（Part 3: アンケート）
-
-- **用途**:  
-  - 被験者のデモグラ情報、AIの理解度や満足度などを収集
-  - 収集項目:
-    - 性別（男性、女性、その他、回答しない）
-    - 年齢（18-100）
-    - AIの予測結果への満足度（1-5）
-    - AIによる意思決定の仕組みの理解度（1-5）
-- **ページ例**:
-  1. `DemographicQuestions`
-  2. `AIImpressionQuestions`
-  3. `FinalThankYou`
-
----
-
-## 2.2 セッション設定・プレイヤー割り当て
-
-- **session_configs** の例 (settings.py):
-
-```python
-SESSION_CONFIGS = [
-    dict(
-        name='baseline_experiment',
-        display_name="Baseline AI Dictator Experiment",
-        num_demo_participants=2,  # 2名で1グループ
-        app_sequence=[
-            'welcome_app',
-            'real_effort_app',
-            'dictator_app',
-            'ml_app',
-            'questionnaire_app'
-        ],
-    ),
-]
 ```
 
-- 2名単位で進める前提: `players_per_group=2`  
-- 募集人数が偶数になるようにし、もし奇数になった場合は1名を待機/キャンセル処理する等の仕組みが必要。
+## 3.2 実験フローの分岐
+
+### 条件1：AI学習条件
+
+1. **共通パート**
+   - `welcome_app`: 実験説明・同意確認
+   - `real_effort_app`: 実労働タスク（1200ポイント獲得）
+
+2. **ディクテーターゲーム（AI_dictator_app）**
+   - 15回の通常ラウンド
+     - A役が選択を行う（X or Y）
+     - 選択データがAIの学習に使用される
+   - AIによる予測（ml_app）
+     - 15回分のデータでAIを学習
+     - 新しいシナリオでAIが予測
+     - AIの予測結果が16回目の配分
+    - **データフロー概要**:
+      1. **ディクテーターゲーム(1〜15回)**
+        - 各回の選択結果（X/Y）と配分情報を保存
+        - 保存内容: PayoffX_A, PayoffX_B, PayoffY_A, PayoffY_B, choice
+      2. **学習データセット作成**
+        - 15回分を(特徴量, ラベル)形式に変換
+        - **特徴量**（全8項目）:
+          1. A_x, B_x（X選択時の配分）
+          2. A_y, B_y（Y選択時の配分）
+          3. A_x + B_x, A_y + B_y（各選択肢の合計：効率性）
+          4. A_x - A_y, B_x - B_y（各選択肢の差分：不平等度等）
+        - **ラベル**: 選択肢（X=1, Y=0）
+      3. **学習（Train）**
+        - RandomForestClassifierで訓練
+        - 設定: n_estimators=10, bootstrap=True, random_state固定
+      4. **予測（Predict）**
+        - 予測用6問からランダムに1問を選択（CSVファイルのIs_Training='False'のデータから）
+        - 同じ特徴量形式で変換し予測
+        - 多数決（各木のvote）で最終予測
+      5. **報酬実装**
+        - 予測結果（X/Y）に基づく配分を実行
+        - 参加者の報酬として反映
+
+3. **共通パート**
+   - `questionnaire_app`: アンケート回答
+   - 最終報酬の表示（実労働 + ランダム2回分）
+
+### 条件2：基本条件
+
+1. **共通パート**
+   - `welcome_app`: 実験説明・同意確認
+   - `real_effort_app`: 実労働タスク（1200ポイント獲得）
+
+2. **ディクテーターゲーム（Base_dictator_app）**
+   - 15回の通常ラウンド
+     - A役が選択を行う（X or Y）
+   - 16回目の追加ラウンド
+     - 通常通りA役が選択
+     - 予測用シナリオから1つ使用
+
+3. **共通パート**
+   - `questionnaire_app`: アンケート回答
+   - 最終報酬の表示（実労働 + ランダム2回分）
+
+## 2.3 条件による主な違い
+
+1. **16回目のラウンド**
+   - AI学習条件：AIが予測して決定
+   - 基本条件：A役が通常通り決定
+
+2. **使用アプリ**
+   - AI学習条件：AI_dictator_app + ml_app
+   - 基本条件：Base_dictator_app のみ
+
+3. **説明内容**
+   - AI学習条件：AIの学習・予測に関する説明あり
+   - 基本条件：通常のディクテーターゲームの説明のみ
+
+4. **報酬**
+   - AI学習条件：15回目のラウンドからランダムに１回+AIが予測した16回目の報酬
+   - 基本条件：16回目のラウンドからランダムに2回
 
 ---
 
@@ -304,10 +186,10 @@ SESSION_CONFIGS = [
    - 各タスク400ポイントで、`participant.vars['initial_endowment']`に合計を保存。
 3. **ディクテーターゲーム (Part 2)**  
    - 2人1組に固定。role()で `A` または `B` に割り当て。  
-   - 3回（本番では16回）、ラウンドごとに2つの配分案(X, Y)を表示 → `A`役が選択 → データ保存。  
-   - 最後に「ランダム1回分」の抽選・ペイオフ計算を実施。
-4. **AI予測**  
-   - `ml_app` へ移行し、3回（本番では16回）分の選択データを取得 → ランダムフォレスト学習 → 予測用6問からランダムに1問を選択 → 予測結果(X or Y)で配分を実行 → `payoff` を加算。
+   - 15回の通常ラウンドと1回の追加ラウンドを実施。
+   - 全16ラウンドから「ランダム2回分」の抽選・ペイオフ計算を実施。
+4. **AI予測 (AI学習条件のみ)**  
+   - `ml_app` へ移行し、15回分の選択データを取得 → ランダムフォレスト学習 → 予測用6問からランダムに1問を選択 → 予測結果(X or Y)で配分を実行。
 5. **アンケート (Part 3)**  
    - デモグラ情報入力、AI満足度や理解度アンケートなど。  
    - 終了画面で「最終獲得額」を表示。
@@ -317,7 +199,7 @@ SESSION_CONFIGS = [
 ## 4. データ保管と分析
 
 - 実験終了後、oTree管理画面から全ラウンドのCSVをダウンロード可能。  
-- `Player`単位で集計されるため、ラウンド数が3（本番では16）の場合は行が3（16）倍になる。  
+- `Player`単位で集計されるため、ラウンド数が16の場合は行が16倍になる。  
 - AIの配分結果は `ml_app_Player` に格納。
 
 ---
@@ -336,87 +218,10 @@ SESSION_CONFIGS = [
 
 3. **AIモデルの実装**  
    - ランダムフォレストを使用（scikit-learn）。
-   - 3回（本番では16回）のデータを全て学習に使用。
+   - 15回のデータを全て学習に使用。
    - 予測用6問からランダムに1問を選択して予測を実施。
 
 4. **報酬支払い**  
    - 実労働タスク報酬（1200ポイント）
-   - ディクテーターゲームでランダムに選ばれた1回分の報酬
-   - AI予測の配分による報酬
+   - 全16ラウンドから選ばれた2回分の報酬
    を合計して最終支払額を決定。
-
----
-
-# まとめ
-
-以上が、実際のコードに基づいた実験の要件定義です。主なポイントは以下の通りです：
-
-- **アプリケーション構造**: welcome → real_effort → dictator → ml → questionnaire の順
-- **ディクテーターゲーム**: 2人固定、3回（本番では16回）、各ラウンドでXかYかをディクテーターが選択
-- **実労働タスク**: バイナリ文字列からパターンを探す3問のタスク
-- **AI(ランダムフォレスト)**: 3回（本番では16回）の選択データを用い、予測用6問からランダムに1問を選んで予測
-- **報酬計算**: 実労働タスク報酬＋ランダム1回分の報酬＋AI配分報酬を合算
-- **実装上の注意**:
-  - payoff_scenarios.csvでペイオフパターンを管理
-  - scikit-learnなどの追加パッケージの導入
-  - データ整形の方法
-  - ペイオフ計算の整合性確認
-
-本要件定義をベースに、実際の研究デザインに合わせて柔軟にカスタマイズしてください。
-
-# 3. 実験条件の構造
-
-本実験は2つの条件で構成されています：
-
-## 3.1 AI学習条件（既存の実験）
-
-- **アプリケーション構成**:
-  1. welcome_app
-  2. real_effort_app
-  3. dictator_app
-  4. ml_app
-  5. questionnaire_app
-
-- **特徴**:
-  - AIによる学習・予測を含む
-  - ディクテーターゲーム後にAI予測フェーズあり
-  - 最終報酬にAI予測結果が反映
-
-## 3.2 基本条件（AIなし）
-
-- **アプリケーション構成**:
-  1. welcome_app
-  2. real_effort_app
-  3. Base_dictator
-  4. questionnaire_app
-
-- **特徴**:
-  - 従来型のディクテーターゲーム
-  - AI学習・予測フェーズなし
-  - ディクテーターゲームの結果のみで報酬決定
-
-## 3.3 ディレクトリ構造
-
-```
-ai2025/
-├── dictator_app/  (AIトレーニングあり版)
-├── Base_dictator/  (AIトレーニングなし版)
-│   ├── models.py
-│   ├── pages.py
-│   ├── templates/
-│   │   └── Base_dictator/
-│   │       ├── Results.html
-│   │       └── Decision.html
-│   └── payoff_scenarios.csv
-├── ml_app/
-├── welcome_app/
-├── real_effort_app/
-├── questionnaire_app/
-└── settings.py
-```
-
-## 3.4 実験の選択
-
-- settings.pyで2つの実験条件を設定
-- 管理者画面から適切な実験条件を選択して実施
-- データ分析時に条件による差異を比較可能
