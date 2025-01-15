@@ -40,12 +40,14 @@ class FinalResults(Page):
             }
         else:
             # 基本条件の場合
-            base_dictator_payoff = self.participant.vars.get('total_base_payoff', 0)
-            total_payoff = base_dictator_payoff
+            # Base_dictator_appで保存された報酬を取得
+            total_game_payoff = self.participant.vars.get('total_base_payoff', 0)
+            selected_payoffs = self.participant.vars.get('selected_base_payoffs', [0, 0])
             
             return {
-                'total_payoff': total_payoff,
-                'base_dictator_payoff': base_dictator_payoff
+                'total_payoff': total_game_payoff,
+                'dictator_payoff1': selected_payoffs[0],
+                'dictator_payoff2': selected_payoffs[1]
             }
 
 page_sequence = [Demographics, PreferenceQuestions, AIFeedback, FinalResults] 

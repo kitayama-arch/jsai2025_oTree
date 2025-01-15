@@ -17,7 +17,8 @@
                 <li>ポイント配分ゲーム（ランダム1回分）: {{ dictator_payoff }} ポイント</li>
                 <li>AI予測による配分: {{ ai_payoff }} ポイント</li>
                 {% else %}
-                <li>ポイント配分ゲーム（ランダム2回分の合計）: {{ base_dictator_payoff }} ポイント</li>
+                <li>ポイント配分ゲーム（1回目）: {{ dictator_payoff1 }} ポイント</li>
+                <li>ポイント配分ゲーム（2回目）: {{ dictator_payoff2 }} ポイント</li>
                 {% endif %}
             </ul>
         </div>

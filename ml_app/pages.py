@@ -118,11 +118,9 @@ class AIDecision(Page):
         print(f"\n=== 報酬計算 ===")
         for p in self.group.get_players():
             p.set_payoffs()
-            initial_endowment = p.participant.vars.get('initial_endowment', 2000)
-            # 最終報酬を設定（実労働タスク報酬を含める）
-            p.participant.payoff = p.participant.vars.get('selected_dictator_payoff', 0) + p.payoff + initial_endowment
+            # 最終報酬を設定（ディクテーターゲームとAI予測の報酬のみ）
+            p.participant.payoff = p.participant.vars.get('selected_dictator_payoff', 0) + p.payoff
             print(f"プレイヤー{p.id_in_group}({p.role()})の報酬:")
-            print(f"- 実労働タスク報酬: {initial_endowment}")
             print(f"- AI予測による報酬: {p.payoff}")
             print(f"- ディクテーターゲーム報酬: {p.participant.vars.get('selected_dictator_payoff', 0)}")
             print(f"- 合計報酬: {p.participant.payoff}")

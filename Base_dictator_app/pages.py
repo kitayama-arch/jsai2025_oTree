@@ -109,7 +109,7 @@ class SelectRoundWaitPage(WaitPage):
                     'payoff_y_b': scenario[1][1],
                     'is_final_prediction': round_num == Constants.num_rounds
                 })
-            
+
             # 情報を保存
             p.participant.vars['selected_base_rounds'] = selected_rounds
             p.participant.vars['selected_base_payoffs'] = selected_payoffs
@@ -118,9 +118,8 @@ class SelectRoundWaitPage(WaitPage):
             total_game_payoff = sum(selected_payoffs)
             p.participant.vars['total_base_payoff'] = total_game_payoff
             
-            # 最終報酬を設定（実労働タスクの報酬を含める）
-            initial_endowment = p.participant.vars.get('initial_endowment', 2000)
-            p.participant.payoff = total_game_payoff + initial_endowment
+            # 最終報酬を設定
+            p.participant.payoff = total_game_payoff
             
             # ログに計算式を出力
             print(f"""
@@ -140,9 +139,8 @@ class SelectRoundWaitPage(WaitPage):
 - 追加ラウンド: {'はい' if selected_details[1]['is_final_prediction'] else 'いいえ'}
 
 計算式:
-実労働タスク報酬: {initial_endowment}
 ゲーム報酬: {selected_payoffs[0]} + {selected_payoffs[1]} = {total_game_payoff}
-最終報酬: {initial_endowment} + {total_game_payoff} = {p.participant.payoff}
+最終報酬: {total_game_payoff}
 """)
 
 class Results(Page):
@@ -163,7 +161,6 @@ class FinalResults(Page):
         selected_payoffs = self.participant.vars['selected_base_payoffs']
         details = self.participant.vars['selected_round_details']
         total_game_payoff = self.participant.vars['total_base_payoff']
-        initial_endowment = self.participant.vars.get('initial_endowment', 2000)
         
         # 各ラウンドの情報を組み合わせる
         rounds_info = []
@@ -182,9 +179,7 @@ class FinalResults(Page):
         return {
             'rounds_info': rounds_info,
             'role': self.player.role(),
-            'initial_endowment': initial_endowment,
-            'total_game_payoff': total_game_payoff,
-            'total_payoff': total_game_payoff + initial_endowment
+            'total_game_payoff': total_game_payoff
         }
 
 page_sequence = [Introduction, Decision, WaitForA, Results, SelectRoundWaitPage, FinalResults] 

@@ -44,10 +44,16 @@
 
     <h4>最終報酬</h4>
     <div class="alert alert-success">
-        <p>実労働タスク報酬: {{ initial_endowment }}ポイント</p>
-        <p>ゲーム報酬: {{ total_game_payoff }}ポイント</p>
+        <div class="mb-3">
+            <h5>報酬の内訳</h5>
+            <ul class="list-unstyled">
+                <li>1回目のラウンド: <strong>{{ rounds_info.0.payoff }}</strong> ポイント</li>
+                <li>2回目のラウンド: <strong>{{ rounds_info.1.payoff }}</strong> ポイント</li>
+            </ul>
+        </div>
         <hr>
-        <p>合計: {{ total_payoff }}ポイント</p>
+        <h5>合計報酬: <strong>{{ total_game_payoff }}</strong> ポイント</h5>
+        <small class="text-muted">（計算式: {{ rounds_info.0.payoff }} + {{ rounds_info.1.payoff }} = {{ total_game_payoff }}）</small>
     </div>
 
     {% next_button %}

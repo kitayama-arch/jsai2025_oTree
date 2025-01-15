@@ -66,8 +66,7 @@ class Player(BasePlayer):
         else:
             self.participant.vars['ai_prediction_payoff'] = self.payoff_B
 
-        # ディクテーターゲームの報酬を最終報酬に設定
+        # ディクテーターゲームの報酬を設定
         if 'selected_dictator_payoff' in self.participant.vars:
-            self.participant.payoff = self.participant.vars['selected_dictator_payoff']
-            # AIの予測結果による報酬を追加
-            self.participant.payoff += self.payoff 
+            # AIの予測結果による報酬とディクテーターゲームの報酬の合計を設定
+            self.participant.payoff = self.participant.vars['selected_dictator_payoff'] + self.payoff 
