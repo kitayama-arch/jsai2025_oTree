@@ -6,11 +6,11 @@ import random
 class Constants(BaseConstants):
     name_in_url = 'real_effort'
     players_per_group = None
-    num_rounds = 3  # 3つのタスク
-    initial_points = 1200  # 初期ポイント
-    points_per_task = 400  # タスクごとのポイント (1200/3)
+    num_rounds = 4  # 4つのタスク
+    initial_points = 2000  # 初期ポイント
+    points_per_task = 500  # タスクごとのポイント (2000/4)
     binary_length = 500  # バイナリ文字列の長さ
-    patterns = ['00100', '11011', '10101']  # 各ラウンドで探すパターン（5桁に変更）
+    patterns = ['00100', '11011', '10101', '01010']  # 各ラウンドで探すパターン（5桁）
 
 class Subsession(BaseSubsession):
     def creating_session(self):

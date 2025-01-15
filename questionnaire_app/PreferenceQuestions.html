@@ -1,0 +1,41 @@
+{{ block title }}
+    選好に関する質問
+{{ endblock }}
+
+{{ block content }}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h4>意思決定における選好</h4>
+        <p>ポイント配分ゲームでの意思決定において、以下の項目をどの程度重視しましたか？</p>
+        <p class="text-muted mb-4">それぞれの項目について、1（全く重視しなかった）から7（非常に重視した）の間で評価してください。</p>
+
+        <div class="mb-4">
+            <h5 class="mb-3">自分の利得に関する選好</h5>
+            {{ formfield 'selfish_preference' }}
+            <small class="text-muted">※ 独裁者（配分する側）として、自分の報酬をできるだけ多くすることを重視した程度をお答えください。</small>
+        </div>
+
+        <div class="mb-4">
+            <h5 class="mb-3">平等性に関する選好</h5>
+            {{ formfield 'equality_preference' }}
+            <small class="text-muted">※ 独裁者と受け手の報酬の差をできるだけ小さくすることを重視した程度をお答えください。</small>
+        </div>
+
+        <div class="mb-4">
+            <h5 class="mb-3">効率性に関する選好</h5>
+            {{ formfield 'efficiency_preference' }}
+            <small class="text-muted">※ 独裁者と受け手の報酬の合計をできるだけ大きくすることを重視した程度をお答えください。</small>
+        </div>
+
+        <div class="mb-4">
+            <h5 class="mb-3">競争的な選好</h5>
+            {{ formfield 'competitive_preference' }}
+            <small class="text-muted">※ 独裁者（自分）の報酬が受け手の報酬より多くなることを重視した程度をお答えください。</small>
+        </div>
+    </div>
+</div>
+
+{{ next_button }}
+
+{{ endblock }} 

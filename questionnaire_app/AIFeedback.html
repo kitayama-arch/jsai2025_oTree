@@ -8,19 +8,45 @@
     <div class="card-body">
         <h4>AIに関する質問</h4>
         <p>実験で使用したAIについて、以下の質問にお答えください。</p>
+        <p class="text-muted mb-4">それぞれの項目について、1（最も否定的）から7（最も肯定的）の間で評価してください。</p>
 
-        {{ formfield 'ai_satisfaction' }}
-        {{ formfield 'ai_understanding' }}
-    </div>
-</div>
+        <div class="mb-5">
+            <h5 class="mb-3">AI予測システムの評価</h5>
+            
+            <div class="mb-4">
+                <h6 class="text-primary mb-2">総合的な満足度</h6>
+                {{ formfield 'ai_satisfaction' }}
+                <small class="text-muted">※ AIによる予測システム全体についての評価です。予測の正確さだけでなく、予測結果の提示タイミングや方法なども含めて総合的に評価してください。</small>
+            </div>
 
-<div class="card">
-    <div class="card-body">
-        <h4>選択理由について</h4>
-        <p>あなたの選択について、以下の質問にお答えください。</p>
+            <div class="mb-4">
+                <h6 class="text-primary mb-2">予測の正確性</h6>
+                {{ formfield 'prediction_accuracy' }}
+                <small class="text-muted">※ 純粋に予測額と実際にあなたが意図していた配分額との一致度についての評価です。</small>
+            </div>
+        </div>
 
-        {{ formfield 'choice_reason' }}
-        {{ formfield 'choice_reason_detail' }}
+        <div class="mb-5">
+            <h5 class="mb-3">理解度と信頼性</h5>
+            
+            <div class="mb-4">
+                <h6 class="text-primary mb-2">AI予測の仕組みの理解</h6>
+                {{ formfield 'ai_understanding' }}
+                <small class="text-muted">※ AIがどのようにあなたの過去の意思決定から学習し、予測を行っていたのかについての理解度を評価してください。</small>
+            </div>
+
+            <div class="mb-4">
+                <h6 class="text-primary mb-2">ランダムフォレストの理解</h6>
+                {{ formfield 'rf_understanding' }}
+                <small class="text-muted">※ 実験で使用した機械学習アルゴリズム（ランダムフォレスト）の基本的な仕組みについての理解度を評価してください。</small>
+            </div>
+
+            <div class="mb-4">
+                <h6 class="text-primary mb-2">テクノロジーへの信頼</h6>
+                {{ formfield 'tech_trust' }}
+                <small class="text-muted">※ AIなどのテクノロジー全般に対する信頼度について、あなたの一般的な考えを評価してください。</small>
+            </div>
+        </div>
     </div>
 </div>
 

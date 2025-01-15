@@ -118,13 +118,11 @@ class SelectRoundWaitPage(WaitPage):
             total_game_payoff = sum(selected_payoffs)
             p.participant.vars['total_base_payoff'] = total_game_payoff
             
-            # 最終報酬を設定
-            p.participant.payoff = total_game_payoff + p.participant.vars.get('initial_endowment', 1200)
+            # 最終報酬を設定（実労働タスクの報酬を含める）
+            initial_endowment = p.participant.vars.get('initial_endowment', 2000)
+            p.participant.payoff = total_game_payoff + initial_endowment
             
             # ログに計算式を出力
-            initial_endowment = p.participant.vars.get('initial_endowment', 1200)
-            total_payoff = total_game_payoff + initial_endowment
-            
             print(f"""
 === プレイヤー {p.id_in_group} ({p.role()}役) の報酬計算 ===
 選択されたラウンド: {selected_rounds}
@@ -144,7 +142,7 @@ class SelectRoundWaitPage(WaitPage):
 計算式:
 実労働タスク報酬: {initial_endowment}
 ゲーム報酬: {selected_payoffs[0]} + {selected_payoffs[1]} = {total_game_payoff}
-最終報酬: {initial_endowment} + {total_game_payoff} = {total_payoff}
+最終報酬: {initial_endowment} + {total_game_payoff} = {p.participant.payoff}
 """)
 
 class Results(Page):
@@ -165,6 +163,7 @@ class FinalResults(Page):
         selected_payoffs = self.participant.vars['selected_base_payoffs']
         details = self.participant.vars['selected_round_details']
         total_game_payoff = self.participant.vars['total_base_payoff']
+        initial_endowment = self.participant.vars.get('initial_endowment', 2000)
         
         # 各ラウンドの情報を組み合わせる
         rounds_info = []
@@ -183,9 +182,9 @@ class FinalResults(Page):
         return {
             'rounds_info': rounds_info,
             'role': self.player.role(),
-            'initial_endowment': self.participant.vars.get('initial_endowment', 1200),
+            'initial_endowment': initial_endowment,
             'total_game_payoff': total_game_payoff,
-            'total_payoff': total_game_payoff + self.participant.vars.get('initial_endowment', 1200)
+            'total_payoff': total_game_payoff + initial_endowment
         }
 
 page_sequence = [Introduction, Decision, WaitForA, Results, SelectRoundWaitPage, FinalResults] 
