@@ -7,8 +7,8 @@ class Constants(BaseConstants):
     name_in_url = 'real_effort'
     players_per_group = None
     num_rounds = 4  # 4つのタスク
-    initial_points = 2000  # 初期ポイント
-    points_per_task = 500  # タスクごとのポイント (2000/4)
+    initial_points = 1200  # 初期ポイント（300×4）
+    points_per_task = 300  # タスクごとのポイント
     binary_length = 500  # バイナリ文字列の長さ
     patterns = ['00100', '11011', '10101', '01010']  # 各ラウンドで探すパターン（5桁）
 
