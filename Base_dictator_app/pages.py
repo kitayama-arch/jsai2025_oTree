@@ -73,10 +73,13 @@ class FinalResults(Page):
         return self.round_number == Constants.num_rounds
 
     def vars_for_template(self):
+        print("\n=== ベースライン条件の報酬計算開始 ===")
         # ランダムに2ラウンドを選択
         selected_rounds = random.sample(range(1, Constants.num_rounds + 1), 2)
         selected_payoffs = []
         selected_details = []
+        
+        print(f"選択されたラウンド: {selected_rounds}")
         
         for round_num in selected_rounds:
             round_player = self.player.in_round(round_num)
@@ -100,9 +103,11 @@ class FinalResults(Page):
                 'choice': choice,
                 'payoff': payoff
             })
+            print(f"ラウンド{round_num}の報酬: {payoff}")
 
-        # 合計報酬を計算
+        # 合計報酬を計算（ディクテーターゲームの報酬のみ）
         total_game_payoff = sum(selected_payoffs)
+        print(f"合計報酬: {total_game_payoff}")
         
         # 参加者の変数を保存
         self.participant.vars['selected_base_rounds'] = selected_rounds
@@ -110,9 +115,10 @@ class FinalResults(Page):
         self.participant.vars['selected_round_details'] = selected_details
         self.participant.vars['total_base_payoff'] = total_game_payoff
         
-        # 最終的な報酬を設定
+        # 最終的な報酬を設定（実労働タスクの報酬は含まない）
         self.participant.payoff = total_game_payoff
         
+        print("=== 報酬計算完了 ===\n")
         return {
             'rounds_info': selected_details,
             'role': self.player.role(),
