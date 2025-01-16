@@ -14,8 +14,8 @@
             <p>合計: <strong>{{ total_payoff }}</strong> ポイント</p>
             <ul>
                 {% if session.config.name == 'ai_experiment' %}
-                <li>ポイント配分ゲーム（ランダム1回分）: {{ dictator_payoff }} ポイント</li>
-                <li>AI予測による配分: {{ ai_payoff }} ポイント</li>
+                <li>ポイント配分ゲーム（ラウンド{{ selected_round }}が選ばれました）: {{ dictator_payoff }} </li>
+                <li>AI予測による配分: {{ ai_payoff }} </li>
                 {% else %}
                 <li>ポイント配分ゲーム（1回目）: {{ dictator_payoff1 }} ポイント</li>
                 <li>ポイント配分ゲーム（2回目）: {{ dictator_payoff2 }} ポイント</li>

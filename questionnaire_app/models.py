@@ -189,4 +189,10 @@ class Player(BasePlayer):
             [6, 'かなり理解できた'],
             [7, '十分理解できた']
         ]
-    ) 
+    )
+
+    # 報酬に関するフィールド
+    selected_dictator_round = models.IntegerField(initial=0)  # 選ばれたディクテーターゲームのラウンド
+    selected_dictator_payoff = models.CurrencyField(initial=0)  # 選ばれたディクテーターゲームの報酬
+    ai_prediction_payoff = models.CurrencyField(initial=0)  # AI予測による報酬
+    final_total_payoff = models.CurrencyField(initial=0)  # 最終的な合計報酬 

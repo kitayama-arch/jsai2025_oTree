@@ -26,21 +26,6 @@ class Decision(Page):
 
     def before_next_page(self):
         self.player.set_payoffs()
-        # 現在のラウンドの決定を保存
-        scenario = Constants.payoff_scenarios[self.round_number - 1]
-        if 'dictator_decisions' not in self.participant.vars:
-            self.participant.vars['dictator_decisions'] = []
-        
-        decision = {
-            'round': self.round_number,
-            'payoff_x_a': scenario[0][0],
-            'payoff_x_b': scenario[0][1],
-            'payoff_y_a': scenario[1][0],
-            'payoff_y_b': scenario[1][1],
-            'choice': self.player.choice,
-            'payoff': self.player.payoff
-        }
-        self.participant.vars['dictator_decisions'].append(decision)
 
 class Results(Page):
     def vars_for_template(self):
@@ -60,7 +45,22 @@ class Results(Page):
             selected_player = self.player.in_round(selected_round)
             
             # 選択されたラウンドの報酬を保存
-            self.participant.vars['selected_dictator_payoff'] = selected_player.payoff
+            self.participant.vars['dictator_game_payoff'] = selected_player.payoff_dictator
             self.participant.vars['selected_round'] = selected_round
+            
+            # 選択されたラウンドの詳細を保存
+            scenario = Constants.payoff_scenarios[selected_round - 1]
+            round_details = [{
+                'round_number': selected_round,
+                'payoff_x_dictator': scenario[0][0],
+                'payoff_x_receiver': scenario[0][1],
+                'payoff_y_dictator': scenario[1][0],
+                'payoff_y_receiver': scenario[1][1],
+                'choice': selected_player.choice,
+                'payoff': selected_player.payoff_dictator
+            }]
+            self.participant.vars['round_details'] = round_details
+            self.participant.vars['selected_rounds'] = [selected_round]
+            self.participant.vars['selected_round_payoffs'] = [selected_player.payoff_dictator]
 
 page_sequence = [Introduction, AIExplanation, Decision, Results] 

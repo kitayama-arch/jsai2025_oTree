@@ -10,13 +10,10 @@
     </div>
 
     <h4>報酬計算に選ばれたラウンド</h4>
-    {% for round in rounds_info %}
+    {% for round_detail in round_details %}
     <div class="card mb-3">
         <div class="card-header">
-            ラウンド {{ round.round_number }}
-            {% if round.is_final_prediction %}
-            <span class="badge badge-info">追加ラウンド</span>
-            {% endif %}
+            ラウンド {{ round_detail.round_number }}
         </div>
         <div class="card-body">
             <table class="table">
@@ -27,17 +24,17 @@
                 </tr>
                 <tr>
                     <td>X</td>
-                    <td>{{ round.payoff_x_a }}</td>
-                    <td>{{ round.payoff_x_b }}</td>
+                    <td>{{ round_detail.payoff_x_dictator }}</td>
+                    <td>{{ round_detail.payoff_x_receiver }}</td>
                 </tr>
                 <tr>
                     <td>Y</td>
-                    <td>{{ round.payoff_y_a }}</td>
-                    <td>{{ round.payoff_y_b }}</td>
+                    <td>{{ round_detail.payoff_y_dictator }}</td>
+                    <td>{{ round_detail.payoff_y_receiver }}</td>
                 </tr>
             </table>
-            <p>A役の選択: <strong>{{ round.choice }}</strong></p>
-            <p>獲得報酬: <strong>{{ round.payoff }}ポイント</strong></p>
+            <p>A役の選択: <strong>{{ round_detail.choice }}</strong></p>
+            <p>獲得報酬: <strong>{{ round_detail.payoff }}ポイント</strong></p>
         </div>
     </div>
     {% endfor %}
@@ -47,13 +44,14 @@
         <div class="mb-3">
             <h5>報酬の内訳</h5>
             <ul class="list-unstyled">
-                <li>1回目のラウンド: <strong>{{ rounds_info.0.payoff }}</strong> ポイント</li>
-                <li>2回目のラウンド: <strong>{{ rounds_info.1.payoff }}</strong> ポイント</li>
+                {% for payoff in selected_round_payoffs %}
+                <li>{{ forloop.counter }}回目のラウンド: <strong>{{ payoff }}</strong> ポイント</li>
+                {% endfor %}
             </ul>
         </div>
         <hr>
-        <h5>合計報酬: <strong>{{ total_game_payoff }}</strong> ポイント</h5>
-        <small class="text-muted">（計算式: {{ rounds_info.0.payoff }} + {{ rounds_info.1.payoff }} = {{ total_game_payoff }}）</small>
+        <h5>合計報酬: <strong>{{ total_payoff }}</strong> ポイント</h5>
+        <small class="text-muted">（計算式: {{ selected_round_payoffs.0 }} + {{ selected_round_payoffs.1 }} = {{ total_payoff }}）</small>
     </div>
 
     {% next_button %}
