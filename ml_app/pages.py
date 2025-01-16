@@ -81,55 +81,52 @@ class Introduction(Page):
 
 class AIDecision(Page):
     def before_next_page(self):
-        # dictator_appの3回分のデータを取得
+        # dictator_appのデータを取得
+        decisions = self.participant.vars.get('dictator_decisions', [])
+        print(f"\n=== プレイヤーの決定データ ===")
+        print(f"取得した決定数: {len(decisions)}件")
+        
         dictator_data = []
-        for p in self.group.get_players():
-            if p.role() == 'A':  # ディクテーターのデータのみ必要
-                decisions = p.participant.vars.get('dictator_decisions', [])
-                print(f"\n=== プレイヤー{p.id_in_group}の決定データ ===")
-                print(f"取得した決定数: {len(decisions)}件")
-                
-                for round_data in decisions:
-                    try:
-                        data = {
-                            'Ax': round_data['payoff_x_a'],
-                            'Bx': round_data['payoff_x_b'],
-                            'Ay': round_data['payoff_y_a'],
-                            'By': round_data['payoff_y_b'],
-                            'choice': round_data['choice']
-                        }
-                        dictator_data.append(data)
-                        print(f"ラウンドデータ追加: {data}")
-                    except KeyError as e:
-                        print(f"Error processing round data: {e}")
-                        print(f"Round data: {round_data}")
+        for round_data in decisions:
+            try:
+                data = {
+                    'Ax': round_data['payoff_x_a'],
+                    'Bx': round_data['payoff_x_b'],
+                    'Ay': round_data['payoff_y_a'],
+                    'By': round_data['payoff_y_b'],
+                    'choice': round_data['choice']
+                }
+                dictator_data.append(data)
+                print(f"ラウンドデータ追加: {data}")
+            except KeyError as e:
+                print(f"Error processing round data: {e}")
+                print(f"Round data: {round_data}")
         
         # 予測用シナリオを取得
-        scenario = Constants.prediction_scenarios[self.group.selected_scenario_index]
+        scenario = Constants.prediction_scenarios[self.player.selected_scenario_index]
         print(f"\n=== 選択されたシナリオ ===")
         print(f"シナリオ: {scenario}")
         
         # AI予測実行
-        self.group.predicted_choice = train_and_predict(dictator_data, scenario)
+        self.player.predicted_choice = train_and_predict(dictator_data, scenario)
         print(f"\n=== 最終予測結果 ===")
-        print(f"予測選択: {self.group.predicted_choice}")
+        print(f"予測選択: {self.player.predicted_choice}")
         
         # 報酬を設定
         print(f"\n=== 報酬計算 ===")
-        for p in self.group.get_players():
-            p.set_payoffs()
-            # 最終報酬を設定（ディクテーターゲームとAI予測の報酬のみ）
-            p.participant.payoff = p.participant.vars.get('selected_dictator_payoff', 0) + p.payoff
-            print(f"プレイヤー{p.id_in_group}({p.role()})の報酬:")
-            print(f"- AI予測による報酬: {p.payoff}")
-            print(f"- ディクテーターゲーム報酬: {p.participant.vars.get('selected_dictator_payoff', 0)}")
-            print(f"- 合計報酬: {p.participant.payoff}")
+        self.player.set_payoffs()
+        # 最終報酬を設定（ディクテーターゲームとAI予測の報酬のみ）
+        self.participant.payoff = self.participant.vars.get('selected_dictator_payoff', 0) + self.player.payoff
+        print(f"プレイヤーの報酬:")
+        print(f"- AI予測による報酬: {self.player.payoff}")
+        print(f"- ディクテーターゲーム報酬: {self.participant.vars.get('selected_dictator_payoff', 0)}")
+        print(f"- 合計報酬: {self.participant.payoff}")
 
 class Results(Page):
     def vars_for_template(self):
-        scenario = Constants.prediction_scenarios[self.group.selected_scenario_index]
+        scenario = Constants.prediction_scenarios[self.player.selected_scenario_index]
         return {
-            'predicted_choice': self.group.predicted_choice,
+            'predicted_choice': self.player.predicted_choice,
             'payoff': self.player.payoff,
             'Ax': scenario[0][0],
             'Bx': scenario[0][1],

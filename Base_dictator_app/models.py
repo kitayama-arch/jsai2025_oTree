@@ -8,7 +8,7 @@ import random
 
 class Constants(BaseConstants):
     name_in_url = 'base_dictator'
-    players_per_group = 2
+    players_per_group = None  # すべてのプレイヤーを1つのグループに
     num_rounds = 16
 
     # CSVからペイオフシナリオを読み込む
@@ -30,33 +30,26 @@ class Constants(BaseConstants):
 
 class Subsession(BaseSubsession):
     def creating_session(self):
-        self.group_randomly(fixed_id_in_group=True)
-        
+        # 各ラウンドで使用するシナリオを設定
         if self.round_number == Constants.num_rounds:
-            print(f"\n[DEBUG] 最終ラウンド（16回目）のセッション作成開始")
-            print(f"利用可能な予測シナリオ数: {len(Constants.prediction_scenarios)}")
-            for i, scenario in enumerate(Constants.prediction_scenarios):
-                print(f"シナリオ{i+1}: X=({scenario[0][0]}, {scenario[0][1]}), Y=({scenario[1][0]}, {scenario[1][1]})")
-            
-            # 最終ラウンドではIs_Training=Falseのシナリオからランダムに1つ選択
-            for group in self.get_groups():
-                group.is_final_prediction = True
+            # 最終ラウンドの場合
+            for player in self.get_players():
+                player.participant.vars['is_final_prediction'] = True
                 # 最終ラウンドのシナリオを選択して保存
                 selected_scenario = random.choice(Constants.prediction_scenarios)
-                group.final_scenario_x_a = selected_scenario[0][0]
-                group.final_scenario_x_b = selected_scenario[0][1]
-                group.final_scenario_y_a = selected_scenario[1][0]
-                group.final_scenario_y_b = selected_scenario[1][1]
-                
-                print(f"\n[DEBUG] グループ{group.id_in_subsession}の最終ラウンドシナリオ:")
-                print(f"選択されたシナリオ: X=({selected_scenario[0][0]}, {selected_scenario[0][1]}), Y=({selected_scenario[1][0]}, {selected_scenario[1][1]})")
-                print(f"保存された値:")
-                print(f"選択肢X: A={group.final_scenario_x_a}, B={group.final_scenario_x_b}")
-                print(f"選択肢Y: A={group.final_scenario_y_a}, B={group.final_scenario_y_b}")
+                player.final_scenario_x_a = c(selected_scenario[0][0])
+                player.final_scenario_x_b = c(selected_scenario[0][1])
+                player.final_scenario_y_a = c(selected_scenario[1][0])
+                player.final_scenario_y_b = c(selected_scenario[1][1])
         else:
-            # それ以外のラウンドではIs_Training=Trueのシナリオを使用
-            for group in self.get_groups():
-                group.is_final_prediction = False
+            # 通常ラウンドの場合
+            for player in self.get_players():
+                player.participant.vars['is_final_prediction'] = False
+                scenario = Constants.training_scenarios[self.round_number - 1]
+                player.final_scenario_x_a = c(scenario[0][0])
+                player.final_scenario_x_b = c(scenario[0][1])
+                player.final_scenario_y_a = c(scenario[1][0])
+                player.final_scenario_y_b = c(scenario[1][1])
 
 class Group(BaseGroup):
     selected_round = models.IntegerField(initial=0)  # 選ばれたラウンド番号を保存
@@ -73,38 +66,38 @@ class Player(BasePlayer):
         widget=widgets.RadioSelect,
         label='配分を選択してください'
     )
-    payoff_A = models.CurrencyField()
-    payoff_B = models.CurrencyField()
+    payoff_A = models.CurrencyField(initial=0)
+    payoff_B = models.CurrencyField(initial=0)
+    
+    # シナリオデータを保存するフィールド（初期値を0に設定）
+    final_scenario_x_a = models.CurrencyField(initial=0)
+    final_scenario_x_b = models.CurrencyField(initial=0)
+    final_scenario_y_a = models.CurrencyField(initial=0)
+    final_scenario_y_b = models.CurrencyField(initial=0)
 
     def role(self):
-        return 'A' if self.id_in_group == 1 else 'B'
+        return 'A'
 
     def set_payoffs(self):
-        if self.group.is_final_prediction:
-            print(f"\n[DEBUG] プレイヤー{self.id_in_group}（{self.role()}役）の最終ラウンド報酬設定:")
-            print(f"保存されているシナリオ:")
-            print(f"選択肢X: A={self.group.final_scenario_x_a}, B={self.group.final_scenario_x_b}")
-            print(f"選択肢Y: A={self.group.final_scenario_y_a}, B={self.group.final_scenario_y_b}")
-            
-            # 最終ラウンドの場合、保存されたシナリオを使用
+        if self.participant.vars.get('is_final_prediction'):
             if self.choice == 'X':
-                self.payoff_A = self.group.final_scenario_x_a
-                self.payoff_B = self.group.final_scenario_x_b
+                self.payoff = self.final_scenario_x_a
+                self.payoff_A = self.final_scenario_x_a
+                self.payoff_B = self.final_scenario_x_b
             else:
-                self.payoff_A = self.group.final_scenario_y_a
-                self.payoff_B = self.group.final_scenario_y_b
-            
-            print(f"選択: {self.choice}")
-            print(f"設定された報酬: A={self.payoff_A}, B={self.payoff_B}")
+                self.payoff = self.final_scenario_y_a
+                self.payoff_A = self.final_scenario_y_a
+                self.payoff_B = self.final_scenario_y_b
         else:
-            # 通常ラウンドの場合
             scenario = Constants.training_scenarios[self.round_number - 1]
             if self.choice == 'X':
-                self.payoff_A = scenario[0][0]
-                self.payoff_B = scenario[0][1]
+                self.payoff = c(scenario[0][0])
+                self.payoff_A = c(scenario[0][0])
+                self.payoff_B = c(scenario[0][1])
             else:
-                self.payoff_A = scenario[1][0]
-                self.payoff_B = scenario[1][1]
+                self.payoff = c(scenario[1][0])
+                self.payoff_A = c(scenario[1][0])
+                self.payoff_B = c(scenario[1][1])
 
         # 自分とペアのプレイヤーの報酬を設定（このラウンドのみ）
         if self.role() == 'A':

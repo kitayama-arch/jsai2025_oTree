@@ -7,7 +7,7 @@ import os
 
 class Constants(BaseConstants):
     name_in_url = 'dictator'
-    players_per_group = 2
+    players_per_group = None  # すべてのプレイヤーを1つのグループに
     num_rounds = 15  # 15ラウンドに変更
 
     # CSVからペイオフシナリオを読み込む
@@ -23,8 +23,7 @@ class Constants(BaseConstants):
                 ))
 
 class Subsession(BaseSubsession):
-    def creating_session(self):
-        self.group_randomly(fixed_id_in_group=True)
+    pass
 
 class Group(BaseGroup):
     pass
@@ -35,27 +34,20 @@ class Player(BasePlayer):
         widget=widgets.RadioSelect,
         label='配分を選択してください'
     )
-    payoff_A = models.CurrencyField()
-    payoff_B = models.CurrencyField()
+    payoff_A = models.CurrencyField(initial=0)
+    payoff_B = models.CurrencyField(initial=0)
 
     def role(self):
-        return 'A' if self.id_in_group == 1 else 'B'
+        return 'A'
 
     def set_payoffs(self):
         # A役のプレイヤーの選択に基づいて配分を決定
         scenario = Constants.payoff_scenarios[self.round_number - 1]
         if self.choice == 'X':
-            self.payoff_A = scenario[0][0]
-            self.payoff_B = scenario[0][1]
+            self.payoff = c(scenario[0][0])
+            self.payoff_A = c(scenario[0][0])
+            self.payoff_B = c(scenario[0][1])
         else:
-            self.payoff_A = scenario[1][0]
-            self.payoff_B = scenario[1][1]
-
-        # 自分とペアのプレイヤーの報酬を設定
-        if self.role() == 'A':
-            self.payoff = self.payoff_A
-            # B役のプレイヤーを取得して報酬を設定
-            other_player = self.get_others_in_group()[0]
-            other_player.payoff = self.payoff_B
-            other_player.payoff_A = self.payoff_A
-            other_player.payoff_B = self.payoff_B 
+            self.payoff = c(scenario[1][0])
+            self.payoff_A = c(scenario[1][0])
+            self.payoff_B = c(scenario[1][1]) 

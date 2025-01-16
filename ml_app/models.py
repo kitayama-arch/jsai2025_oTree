@@ -7,7 +7,7 @@ import random
 
 class Constants(BaseConstants):
     name_in_url = 'ml_app'
-    players_per_group = 2
+    players_per_group = None  # すべてのプレイヤーを1つのグループに
     num_rounds = 1
 
     # CSVから予測用のペイオフシナリオを読み込む
@@ -24,47 +24,36 @@ class Constants(BaseConstants):
 
 class Subsession(BaseSubsession):
     def creating_session(self):
-        # dictator_appと同じグループを維持
-        for player in self.get_players():
-            participant = player.participant
-            participant.vars['ml_id_in_group'] = participant.vars.get('dictator_id_in_group', 0)
-        
         # 予測用の6つのゲームからランダムに1つを選択
-        for group in self.get_groups():
-            group.selected_scenario_index = random.randrange(len(Constants.prediction_scenarios))
+        for player in self.get_players():
+            player.selected_scenario_index = random.randrange(len(Constants.prediction_scenarios))
 
 class Group(BaseGroup):
-    predicted_choice = models.StringField()  # AIの予測結果（'X' or 'Y'）
-    selected_scenario_index = models.IntegerField()  # 選択されたシナリオのインデックス
+    pass
 
 class Player(BasePlayer):
-    payoff_A = models.CurrencyField()
-    payoff_B = models.CurrencyField()
+    predicted_choice = models.StringField()  # AIの予測結果（'X' or 'Y'）
+    selected_scenario_index = models.IntegerField()  # 選択されたシナリオのインデックス
+    payoff_A = models.CurrencyField(initial=0)
+    payoff_B = models.CurrencyField(initial=0)
 
     def role(self):
-        return 'A' if self.id_in_group == 1 else 'B'
+        return 'A'
 
     def set_payoffs(self):
         # AIの予測結果による報酬を設定
-        scenario = Constants.prediction_scenarios[self.group.selected_scenario_index]
-        if self.group.predicted_choice == 'X':
-            self.payoff_A = scenario[0][0]
-            self.payoff_B = scenario[0][1]
+        scenario = Constants.prediction_scenarios[self.selected_scenario_index]
+        if self.predicted_choice == 'X':
+            self.payoff = c(scenario[0][0])
+            self.payoff_A = c(scenario[0][0])
+            self.payoff_B = c(scenario[0][1])
         else:
-            self.payoff_A = scenario[1][0]
-            self.payoff_B = scenario[1][1]
-
-        # AIの予測結果による報酬を設定
-        if self.role() == 'A':
-            self.payoff = self.payoff_A
-        else:
-            self.payoff = self.payoff_B
+            self.payoff = c(scenario[1][0])
+            self.payoff_A = c(scenario[1][0])
+            self.payoff_B = c(scenario[1][1])
 
         # AIの予測結果による報酬をparticipant.varsに保存
-        if self.role() == 'A':
-            self.participant.vars['ai_prediction_payoff'] = self.payoff_A
-        else:
-            self.participant.vars['ai_prediction_payoff'] = self.payoff_B
+        self.participant.vars['ai_prediction_payoff'] = self.payoff
 
         # ディクテーターゲームの報酬を設定
         if 'selected_dictator_payoff' in self.participant.vars:
