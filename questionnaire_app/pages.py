@@ -3,7 +3,7 @@ from .models import Constants
 
 class Demographics(Page):
     form_model = 'player'
-    form_fields = ['age', 'gender', 'gakubu', 'gakunen']
+    form_fields = ['age', 'gender', 'gakubu', 'gakunen', 'feedback']
 
 class PreferenceQuestions(Page):
     form_model = 'player'
