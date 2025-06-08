@@ -30,4 +30,9 @@ __pycache__/
 # Distribution / packaging
 dist/
 build/
-*.egg-info/ 
+*.egg-info/
+
+# 機密データ - パブリックリポジトリからは除外
+_rooms/
+all_apps_wide_*.csv
+settings.py 
